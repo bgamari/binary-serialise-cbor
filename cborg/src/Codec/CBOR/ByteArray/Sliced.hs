@@ -18,6 +18,7 @@
 --
 module Codec.CBOR.ByteArray.Sliced
   ( SlicedByteArray(..)
+  , fromShortByteString
   , fromByteString
   , fromByteArray
   , sizeofSlicedByteArray
@@ -44,10 +45,11 @@ import Codec.CBOR.ByteArray.Internal
 
 data SlicedByteArray = SBA {unSBA :: !Prim.ByteArray, offset :: !Int, length :: !Int}
 
+fromShortByteString :: BSS.ShortByteString -> SlicedByteArray
+fromShortByteString (BSS.SBS ba) = fromByteArray (Prim.ByteArray ba)
+
 fromByteString :: BS.ByteString -> SlicedByteArray
-fromByteString bs =
-    case BSS.toShort bs of
-      BSS.SBS ba -> fromByteArray (Prim.ByteArray ba)
+fromByteString = fromShortByteString . BSS.toShort
 
 fromByteArray :: Prim.ByteArray -> SlicedByteArray
 fromByteArray ba = SBA ba 0 (Prim.sizeofByteArray ba)

@@ -21,6 +21,7 @@ module Codec.CBOR.ByteArray
   ( -- * Simple byte arrays
     ByteArray(..)
   , sizeofByteArray
+  , fromShortByteString
   , fromByteString
   , toBuilder
   , toSliced
@@ -44,10 +45,11 @@ sizeofByteArray :: ByteArray -> Int
 {-# INLINE sizeofByteArray #-}
 sizeofByteArray (BA ba) = Prim.sizeofByteArray ba
 
+fromShortByteString :: BSS.ShortByteString -> ByteArray
+fromShortByteString (BSS.SBS ba) = BA (Prim.ByteArray ba)
+
 fromByteString :: BS.ByteString -> ByteArray
-fromByteString bs =
-    case BSS.toShort bs of
-      BSS.SBS ba -> BA (Prim.ByteArray ba)
+fromByteString = fromShortByteString . BSS.toShort
 
 toBuilder :: ByteArray -> BSB.Builder
 toBuilder = Sliced.toBuilder . toSliced
