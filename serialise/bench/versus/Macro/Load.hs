@@ -41,10 +41,8 @@ readPkgIndex = fmap extractCabalFiles . readTarIndex
         } <- entries
       , let filename = Tar.entryPath entry
       , takeExtension filename == ".cabal"
-      , let pkgDesc = case parsePackageDescription
-                         . ignoreBOM . fromUTF8 . BS.unpack $ cabalFile of
-                        ParseOk _   pkg -> pkg
-                        ParseFailed err -> error (filename ++ ": " ++ show err)
+      , ParseOk _ pkgDesc <- pure . parsePackageDescription
+                             . ignoreBOM . fromUTF8 . BS.unpack $ cabalFile
       ]
 
     readTarIndex :: BS.ByteString
