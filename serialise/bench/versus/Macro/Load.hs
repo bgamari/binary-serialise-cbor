@@ -9,7 +9,7 @@ import Text.ParserCombinators.ReadP as ReadP hiding (get)
 import qualified Text.ParserCombinators.ReadP as Parse
 import qualified Text.PrettyPrint          as Disp
 import qualified Data.Char as Char (isDigit, isAlphaNum, isSpace)
-import Text.PrettyPrint hiding (braces)
+import Text.PrettyPrint hiding (braces, (<>))
 
 import Data.List
 import Data.Function (on)
@@ -18,6 +18,7 @@ import Data.Maybe
 import Data.Tree as Tree (Tree(..), flatten)
 import Data.Array (Array, accumArray, bounds, Ix(inRange), (!))
 import Data.Bits
+import Data.Semigroup hiding (option)
 import Control.Monad
 import Control.Exception
 import qualified Data.ByteString.Lazy.Char8 as BS
@@ -27,8 +28,8 @@ import qualified Codec.Archive.Tar.Entry as Tar
 
 #if !MIN_VERSION_base(4,8,0)
 import Control.Applicative (Applicative(..))
-import Data.Monoid hiding ((<>))
 #endif
+import Prelude     hiding ((<>))
 
 readPkgIndex :: BS.ByteString -> Either String [GenericPackageDescription]
 readPkgIndex = fmap extractCabalFiles . readTarIndex
@@ -2378,7 +2379,10 @@ instance Monoid Library where
     libExposed     = True,
     libBuildInfo   = mempty
   }
-  mappend a b = Library {
+  mappend = (<>)
+
+instance Semigroup Library where
+  a <> b = Library {
     exposedModules = combine exposedModules,
     libExposed     = libExposed a && libExposed b, -- so False propagates
     libBuildInfo   = combine libBuildInfo
@@ -2394,7 +2398,10 @@ instance Monoid Executable where
     modulePath = mempty,
     buildInfo  = mempty
   }
-  mappend a b = Executable{
+  mappend = (<>)
+
+instance Semigroup Executable where
+  a <> b = Executable{
     exeName    = combine' exeName,
     modulePath = combine modulePath,
     buildInfo  = combine buildInfo
@@ -2417,8 +2424,10 @@ instance Monoid TestSuite where
         testBuildInfo = mempty,
         testEnabled   = False
     }
+    mappend = (<>)
 
-    mappend a b = TestSuite {
+instance Semigroup TestSuite where
+    a <> b = TestSuite {
         testName      = combine' testName,
         testInterface = combine  testInterface,
         testBuildInfo = combine  testBuildInfo,
@@ -2433,8 +2442,11 @@ instance Monoid TestSuite where
 
 instance Monoid TestSuiteInterface where
     mempty  =  TestSuiteUnsupported (TestTypeUnknown mempty (Version [] []))
-    mappend a (TestSuiteUnsupported _) = a
-    mappend _ b                        = b
+    mappend = (<>)
+
+instance Semigroup TestSuiteInterface where
+    a <> (TestSuiteUnsupported _) = a
+    _ <> b                        = b
 
 emptyTestSuite :: TestSuite
 emptyTestSuite = mempty
@@ -2446,8 +2458,10 @@ instance Monoid Benchmark where
         benchmarkBuildInfo = mempty,
         benchmarkEnabled   = False
     }
+    mappend = (<>)
 
-    mappend a b = Benchmark {
+instance Semigroup Benchmark where
+    a <> b = Benchmark {
         benchmarkName      = combine' benchmarkName,
         benchmarkInterface = combine  benchmarkInterface,
         benchmarkBuildInfo = combine  benchmarkBuildInfo,
@@ -2462,8 +2476,11 @@ instance Monoid Benchmark where
 
 instance Monoid BenchmarkInterface where
     mempty  =  BenchmarkUnsupported (BenchmarkTypeUnknown mempty (Version [] []))
-    mappend a (BenchmarkUnsupported _) = a
-    mappend _ b                        = b
+    mappend = (<>)
+
+instance Semigroup BenchmarkInterface where
+    a <> (BenchmarkUnsupported _) = a
+    _ <> b                        = b
 
 emptyBenchmark :: Benchmark
 emptyBenchmark = mempty
@@ -2496,7 +2513,10 @@ instance Monoid BuildInfo where
     customFieldsBI    = [],
     targetBuildDepends = []
   }
-  mappend a b = BuildInfo {
+  mappend = (<>)
+
+instance Semigroup BuildInfo where
+  a <> b = BuildInfo {
     buildable         = buildable a && buildable b,
     buildTools        = combine    buildTools,
     cppOptions        = combine    cppOptions,

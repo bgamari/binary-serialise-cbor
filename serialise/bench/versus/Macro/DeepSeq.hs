@@ -3,7 +3,7 @@ module Macro.DeepSeq where
 
 import Macro.Types
 
-import Control.DeepSeq
+import Control.DeepSeq hiding (rnf1, rnf2)
 
 rnf0 :: ()
 rnf1 :: NFData a => a -> ()
