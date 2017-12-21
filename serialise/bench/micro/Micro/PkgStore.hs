@@ -9,7 +9,7 @@ serialise :: Tree -> BS.ByteString
 serialise pkgs = Store.encode pkgs
 
 deserialise :: BS.ByteString -> Tree
-deserialise = (\(Right x) -> x) . Store.decode
+deserialise = either (error . show) id . Store.decode
 
 instance Store Tree
 

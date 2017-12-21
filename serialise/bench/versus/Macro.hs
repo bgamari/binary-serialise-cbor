@@ -46,7 +46,7 @@ benchmarks =
       , bench "aeson TH"      (whnf perfEncodeAesonTH      tstdata)
       , bench "read/show"     (whnf perfEncodeReadShow     tstdata)
       , bench "cbor"          (whnf perfEncodeCBOR         tstdata)
-      , bench "store"         (whnf perfEncodeStore        tstdata)
+      --, bench "store"         (whnf perfEncodeStore        tstdata)
       ]
 
   , env readBigTestData $ \tstdata ->
@@ -62,8 +62,8 @@ benchmarks =
             ]
       , env (return $ combineChunks $ ReadShow.serialise tstdata)
         $ \tstdataS -> bench "read/show" (whnf perfDecodeReadShow tstdataS)
-      , env (return $ PkgStore.serialise tstdata)
-        $ \tstdataR -> bench "store" (whnf perfDecodeStore tstdataR)
+      --, env (return $ PkgStore.serialise tstdata)
+      --  $ \tstdataR -> bench "store" (whnf perfDecodeStore tstdataR)
       , env (return $ combineChunks $ CBOR.serialise tstdata)
         $ \tstdataR -> bench "cbor" (whnf perfDecodeCBOR tstdataR)
       ]
@@ -82,8 +82,8 @@ benchmarks =
 
       , env (return $ combineChunks $ ReadShow.serialise tstdata)
       $ \tstdataS -> bench "read/show" (nf perfDecodeReadShow tstdataS)
-      , env (return $ PkgStore.serialise tstdata)
-      $ \tstdataR -> bench "store" (nf perfDecodeStore tstdataR)
+      --, env (return $ PkgStore.serialise tstdata)
+      -- $ \tstdataR -> bench "store" (nf perfDecodeStore tstdataR)
       , env (return $ combineChunks $ CBOR.serialise tstdata)
       $ \tstdataR -> bench "cbor" (nf perfDecodeCBOR tstdataR)
       ]

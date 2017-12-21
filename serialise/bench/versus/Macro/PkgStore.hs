@@ -9,7 +9,7 @@ serialise :: [GenericPackageDescription] -> BS.ByteString
 serialise pkgs = Store.encode pkgs
 
 deserialise :: ByteString -> [GenericPackageDescription]
-deserialise = (\(Right x) -> x) . Store.decode
+deserialise = either (error . show) id . Store.decode
 
 instance Store Version
 instance Store PackageName

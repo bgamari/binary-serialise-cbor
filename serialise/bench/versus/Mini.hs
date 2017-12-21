@@ -25,10 +25,10 @@ benchmarks =
           [ envCereal $ \v ->
               bench "deserialise" $ nf PkgCereal.deserialise v
           ]
-      , bgroup "store"
-          [ envStore $ \v ->
-              bench "deserialise" $ nf PkgStore.deserialise v
-          ]
+      --, bgroup "store"
+      --    [ envStore $ \v ->
+      --        bench "deserialise" $ nf PkgStore.deserialise v
+      --    ]
       , bgroup "cbor"
           [ envCBOR $ \v ->
               bench "deserialise" $ nf CBOR.deserialise v
