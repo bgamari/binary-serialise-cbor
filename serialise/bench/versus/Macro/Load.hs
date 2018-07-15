@@ -31,6 +31,12 @@ import Control.Applicative (Applicative(..))
 #endif
 import Prelude     hiding ((<>))
 
+#if __GLASGOW_HASKELL__ < 800
+-- @pretty@ only provides this instance for GHC 8.0 and higher.
+instance Semigroup Disp.Doc where
+    (<>) = Dist.(<>)
+#endif
+
 readPkgIndex :: BS.ByteString -> Either String [GenericPackageDescription]
 readPkgIndex = fmap extractCabalFiles . readTarIndex
   where
