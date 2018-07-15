@@ -252,6 +252,7 @@ benchmark versus
     cborg,
     serialise,
 
+    semigroups              >= 0.18    && < 0.19,
     filepath                >= 1.0     && < 1.5,
     containers              >= 0.5     && < 0.6,
     deepseq                 >= 1.0     && < 1.5,
